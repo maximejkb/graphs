@@ -1,14 +1,26 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
+<script src="https://d3js.org/d3.v4.min.js"></script>
 
-<form>
-  <input type = "radio" name = "algorithm" value = "DFS" />
-  <input type = "radio" name = "algorithm" value = "BFS" />
-  <input type = "radio" name = "algorithm" value = "Djikstra's" />
+<form id = "algorithmForm">
+  <input type = "radio" name = "algorithm" value = "DFS" /> DFS
+  <input type = "radio" name = "algorithm" value = "BFS" /> BFS
+  <input type = "radio" name = "algorithm" value = "Djikstra's" /> Djikstra's
 </form>
 
 <svg width = "1000" height = "1000"> </svg>
-<script src="https://d3js.org/d3.v4.min.js"></script>
+
+<style>
+  .algorithmForm {
+    float: right;
+    position: fixed;
+  }
+
+  input {
+    display: inline;
+  }
+</style>
+
 <script>
   //Dummy data just for development use. Array of JSON-style objects.
   var data = [
@@ -283,11 +295,25 @@
     .attr("dx", 15)
     .attr("dy", 5);
 
+  //A timer which slows the progression of the graph traversal (only progresses the
+  //traversal every 5 ticks).
+  var timer = 0;
+  console.log(simulation.alphaMin());
+
   //On each time tick of the simulation, this function recalculates position.
   simulation.nodes(data).on("tick", () => {
+    //Increment timer and runDFS if the search is still ongoing.
     if (!searchComplete) {
-      runDFS();
+      //If the simulation's alpha ("cooling parameter") falls below the threshold
+      //simulation.alphaMin (generally 0.001), ticking stops. Can't have this
+      //happening mid-search, so keep alpha artificially elevated.
+      simulation.alpha(0.4);
+      if (timer == 0) {
+        runDFS();
+      }
     }
+    timer = (timer + 1) % 5;
+
     nodeElements
     .attr("cx", node => node.x)
     .attr("cy", node => node.y);
