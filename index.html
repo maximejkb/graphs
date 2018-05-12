@@ -1,21 +1,17 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <script src="https://d3js.org/d3.v4.min.js"></script>
-
 <form id = "algorithmForm">
   <input type = "radio" name = "algorithm" value = "DFS" /> DFS
   <input type = "radio" name = "algorithm" value = "BFS" /> BFS
   <input type = "radio" name = "algorithm" value = "Djikstra's" /> Djikstra's
 </form>
-
 <svg width = "1000" height = "1000"> </svg>
-
 <style>
   .algorithmForm {
     float: right;
     position: fixed;
   }
-
   input {
     display: inline;
   }
@@ -192,6 +188,10 @@
     return marked.includes(node) ? "DarkSeaGreen" : "DarkGray";
   }
 
+  function colorMarkedEdge(edge) {
+    return (marked.includes(edge.source) || marked.includes(edge.target)) ? "DarkSeaGreen" : "LightGray";
+  }
+
   //Sub-routine for DFS and BFS -- returns an array of unmarked vertices. Returns
   //empty array if there are no more unmarked vertices.
   function getUnmarkedNeighbors(current) {
@@ -222,6 +222,7 @@
     //Color nodes appropriately.
     nodeElements.attr("fill", node => colorMarkedNode(node));
     textElements.attr("fill", text => colorMarkedText(text));
+    edgeElements.attr("stroke", edge => colorMarkedEdge(edge));
   }
 
   //Performs a "frame-by-frame" version of DFS for compatibility with rendering.
@@ -256,6 +257,7 @@
     //Color nodes appropriately.
     nodeElements.attr("fill", node => colorMarkedNode(node));
     textElements.attr("fill", text => colorMarkedText(text));
+    edgeElements.attr("stroke", edge => colorMarkedEdge(edge));
 
     //"Frame-by-frame" recursion (saving the state at the end of each round with
     //a persistent array of not-yet-considered neighbors).
@@ -298,7 +300,6 @@
   //A timer which slows the progression of the graph traversal (only progresses the
   //traversal every 5 ticks).
   var timer = 0;
-  console.log(simulation.alphaMin());
 
   //On each time tick of the simulation, this function recalculates position.
   simulation.nodes(data).on("tick", () => {
