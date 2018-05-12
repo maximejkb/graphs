@@ -5,6 +5,7 @@
   <input type = "radio" name = "algorithm" value = "DFS" id = "dfs" /> DFS
   <input type = "radio" name = "algorithm" value = "BFS" id = "bfs" /> BFS
   <input type = "radio" name = "algorithm" value = "Djikstra's" /> Djikstra's
+  <input type = "checkbox" name = "labels" value = "labels" onclick = "toggleLabels()" /> Show vertex labels
 </form>
 <svg width = "1000" height = "1000"> </svg>
 <style>
@@ -67,7 +68,40 @@
     {label: "44"},
     {label: "45"},
     {label: "46"},
-    {label: "47"}
+    {label: "47"},
+    {label: "48"},
+    {label: "49"},
+    {label: "50"},
+    {label: "51"},
+    {label: "52"},
+    {label: "53"},
+    {label: "54"},
+    {label: "55"},
+    {label: "56"},
+    {label: "57"},
+    {label: "58"},
+    {label: "59"},
+    {label: "60"},
+    {label: "61"},
+    {label: "62"},
+    {label: "63"},
+    {label: "64"},
+    {label: "65"},
+    {label: "66"},
+    {label: "67"},
+    {label: "68"},
+    {label: "69"},
+    {label: "70"},
+    {label: "71"},
+    {label: "72"},
+    {label: "73"},
+    {label: "74"},
+    {label: "75"},
+    {label: "76"},
+    {label: "77"},
+    {label: "78"},
+    {label: "79"},
+    {label: "80"},
   ];
   var edges = [
     {source: "1", target: "2", distance: 30},
@@ -133,8 +167,49 @@
     {source: "43", target: "44", distance: 30},
     {source: "45", target: "46", distance: 30},
     {source: "43", target: "46", distance: 30},
-    {source: "46", target: "47", distance: 30}
-
+    {source: "46", target: "47", distance: 30},
+    {source: "69", target: "50", distance: 10},
+    {source: "69", target: "51", distance: 10},
+    {source: "69", target: "49", distance: 10},
+    {source: "49", target: "50", distance: 15},
+    {source: "49", target: "48", distance: 30},
+    {source: "50", target: "51", distance: 15},
+    {source: "50", target: "55", distance: 30},
+    {source: "51", target: "49", distance: 15},
+    {source: "51", target: "56", distance: 30},
+    {source: "49", target: "52", distance: 30},
+    {source: "50", target: "53", distance: 30},
+    {source: "51", target: "54", distance: 30},
+    {source: "48", target: "52", distance: 30},
+    {source: "54", target: "56", distance: 30},
+    {source: "55", target: "53", distance: 30},
+    {source: "48", target: "56", distance: 30},
+    {source: "52", target: "55", distance: 30},
+    {source: "53", target: "54", distance: 30},
+    {source: "48", target: "57", distance: 30},
+    {source: "48", target: "58", distance: 30},
+    {source: "57", target: "58", distance: 30},
+    {source: "58", target: "59", distance: 30},
+    {source: "52", target: "59", distance: 30},
+    {source: "52", target: "60", distance: 30},
+    {source: "59", target: "60", distance: 30},
+    {source: "60", target: "61", distance: 30},
+    {source: "55", target: "61", distance: 30},
+    {source: "55", target: "62", distance: 30},
+    {source: "61", target: "62", distance: 30},
+    {source: "62", target: "63", distance: 30},
+    {source: "53", target: "63", distance: 30},
+    {source: "53", target: "64", distance: 30},
+    {source: "63", target: "64", distance: 30},
+    {source: "64", target: "65", distance: 30},
+    {source: "54", target: "65", distance: 30},
+    {source: "54", target: "66", distance: 30},
+    {source: "65", target: "66", distance: 30},
+    {source: "66", target: "67", distance: 30},
+    {source: "56", target: "67", distance: 30},
+    {source: "56", target: "68", distance: 30},
+    {source: "67", target: "68", distance: 30},
+    {source: "57", target: "68", distance: 30}
   ]
 
   //Get the height and width of the browser window.
@@ -222,6 +297,7 @@
 
     //Give initial values to fringe.
     var unmarkedNeighbors = getUnmarkedNeighbors(current);
+    unmarkedNeighbors.sort(neighborSort);
     unmarkedNeighbors.forEach((neighbor) => {
       fringe.push(neighbor);
     });
@@ -243,6 +319,19 @@
     } else if (document.getElementById("bfs").checked) {
       //Treats the Javascript array as a F.I.F.O. queue.
       return nodes.shift();
+    }
+  }
+
+  //Sorts the array appropriately so that the label values influence order
+  //of enqueuing to the fringe.
+  function neighborSort(node1, node2) {
+    if (document.getElementById("bfs").checked) {
+      //We want to insert in decreasing order for a F.I.F.O. stack (BFS).
+      return parseInt(node1.label) - parseInt(node2.label);
+    } else {
+      //We want to insert in increasing order for a L.I.F.O. stack (DFS) or
+      //default, since this presents a natural order.
+      return parseInt(node2.label) - parseInt(node1.label);
     }
   }
 
@@ -271,9 +360,12 @@
 
     //Regular DFS begins here: Mark current.
     marked.push(current);
+    console.log(current.label);
 
-    //Fetch neighbors.
+    //Fetch neighbors. Sort before inserting so we access in the correct order
+    //without losing the priority of the overall list.
     var unmarkedNeighbors = getUnmarkedNeighbors(current);
+    unmarkedNeighbors.sort(neighborSort);
 
     //Color nodes appropriately. Green edges represent edges to/from items that are
     //marked -- the edges to nodes that are in the fringe.
@@ -286,6 +378,13 @@
     unmarkedNeighbors.forEach((neighbor) => {
       fringe.push(neighbor);
     });
+  }
+
+  //Toggles text visibility: if opacity is 0, sets to 1. If opacity is 1, sets
+  //to 0.
+  function toggleLabels() {
+    var currentOpacity = textElements.attr("fill-opacity");
+    textElements.attr("fill-opacity", 1 - currentOpacity);
   }
 
   //Create SVG line elements for each of our links/edges.
@@ -316,6 +415,7 @@
     .text(node => node.label)
     .attr("font-size", 15)
     .attr("fill", "DarkGray")
+    .attr("fill-opacity", 1)
     .attr("dx", 15)
     .attr("dy", 5);
 
