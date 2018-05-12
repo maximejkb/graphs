@@ -2,8 +2,8 @@
 <meta charset="utf-8">
 <script src="https://d3js.org/d3.v4.min.js"></script>
 <form id = "algorithmForm">
-  <input type = "radio" name = "algorithm" value = "DFS" /> DFS
-  <input type = "radio" name = "algorithm" value = "BFS" /> BFS
+  <input type = "radio" name = "algorithm" value = "DFS" id = "dfs" /> DFS
+  <input type = "radio" name = "algorithm" value = "BFS" id = "bfs" /> BFS
   <input type = "radio" name = "algorithm" value = "Djikstra's" /> Djikstra's
 </form>
 <svg width = "1000" height = "1000"> </svg>
@@ -64,6 +64,7 @@
     {label: "41"},
     {label: "42"},
     {label: "43"},
+    {label: "44"},
     {label: "45"},
     {label: "46"},
     {label: "47"}
@@ -126,9 +127,14 @@
     {source: "34", target: "37", distance: 60},
     {source: "34", target: "38", distance: 40},
     {source: "34", target: "39", distance: 30},
-    {source: "41", target: "40", distance: 30},
-    {source: "40", target: "42", distance: 30},
-    {source: "43", target: "42", distance: 30}
+    {source: "40", target: "41", distance: 30},
+    {source: "41", target: "42", distance: 30},
+    {source: "42", target: "43", distance: 30},
+    {source: "43", target: "44", distance: 30},
+    {source: "45", target: "46", distance: 30},
+    {source: "43", target: "46", distance: 30},
+    {source: "46", target: "47", distance: 30}
+
   ]
 
   //Get the height and width of the browser window.
@@ -152,6 +158,10 @@
     .id(edge => edge.label)
     .distance(edge => edge.distance));
 
+  //Finally, we set the alphaTarget (asymptote of exponentially-decaying cooling
+  //parameter) to 0.2, so it never reaches alhpaMin.
+  simulation.alphaTarget(0.1);
+
   //Now we define a function to be called on drag-drop events.
   var dragDrop = d3.drag()
     .on('start', node => {
@@ -165,7 +175,7 @@
     })
     .on('end', node => {
       if (!d3.event.active) {
-        simulation.alphaTarget(0);
+        simulation.alphaTarget(0.1).restart();
       }
       node.fx = null;
       node.fy = null;
@@ -205,8 +215,8 @@
     }, [current]);
   }
 
-  //Initiates depth-first search starting at the vertex clicked.
-  function startNodeDFS(current) {
+  //Initiates DFS/BFS starting at the vertex clicked.
+  function startNodeSearch(current) {
     //Start off the marked array.
     marked.push(current);
 
@@ -225,16 +235,27 @@
     edgeElements.attr("stroke", edge => colorMarkedEdge(edge));
   }
 
+  //Performs the appropriate action depending on algorithm.
+  function visitAction(nodes) {
+    if (document.getElementById("dfs").checked) {
+      //Treats the Javascript array as a L.I.F.O. stack.
+      return nodes.pop();
+    } else if (document.getElementById("bfs").checked) {
+      //Treats the Javascript array as a F.I.F.O. queue.
+      return nodes.shift();
+    }
+  }
+
   //Performs a "frame-by-frame" version of DFS for compatibility with rendering.
-  function runDFS() {
+  function runSearch() {
     //Take the last item inserted from the stack.
-    var current = fringe.pop();
+    var current = visitAction(fringe);
 
     //Since we're not progressing recursively, we might consider already-visited
     //vertices (since we add to the fringe before marking, and can't rely on order
     //of calls to create a natural order).
     while (marked.includes(current)) {
-      current = fringe.pop();
+      current = visitAction(fringe);
     }
 
     //If we empty the fringe looking for unmarked vertices, it means there are no
@@ -254,7 +275,8 @@
     //Fetch neighbors.
     var unmarkedNeighbors = getUnmarkedNeighbors(current);
 
-    //Color nodes appropriately.
+    //Color nodes appropriately. Green edges represent edges to/from items that are
+    //marked -- the edges to nodes that are in the fringe.
     nodeElements.attr("fill", node => colorMarkedNode(node));
     textElements.attr("fill", text => colorMarkedText(text));
     edgeElements.attr("stroke", edge => colorMarkedEdge(edge));
@@ -281,7 +303,7 @@
   .enter().append("circle")
     .attr("r", 10)
     .attr("fill", "LightGray")
-    .on("click", startNodeDFS);
+    .on("click", startNodeSearch);
 
   //Link the dragDrop function to a call from a node.
   nodeElements.call(dragDrop);
@@ -308,12 +330,12 @@
       //If the simulation's alpha ("cooling parameter") falls below the threshold
       //simulation.alphaMin (generally 0.001), ticking stops. Can't have this
       //happening mid-search, so keep alpha artificially elevated.
-      simulation.alpha(0.4);
+      simulation.alphaTarget(0.1).restart();
       if (timer == 0) {
-        runDFS();
+        runSearch();
       }
     }
-    timer = (timer + 1) % 5;
+    timer = (timer + 1) % 10;
 
     nodeElements
     .attr("cx", node => node.x)
