@@ -156,48 +156,6 @@
       node.fy = null;
   });
 
-  //Given a node, returns an array of labels corresponding to directly adjacent nodes.
-  function getNeighbors(clickedNode) {
-    return edges.reduce((neighbors, edge) => {
-      if (edge.target.label === clickedNode.label) {
-        neighbors.push(edge.source.label);
-      } else if (edge.source.label === clickedNode.label) {
-        neighbors.push(edge.target.label);
-      }
-      return neighbors;
-    }, [clickedNode.label]);
-  }
-
-  //Given a node and an edge, determines if the edge is incident to the node.
-  function isIncidentEdge(clickedNode, edge) {
-    return edge.target.label === clickedNode.label ||  edge.source.label === clickedNode.label;
-  }
-
-  //Colors the node according to adjacency to a clicked node.
-  function colorNode(node, neighbors) {
-    return neighbors.includes(node.label) ? "DarkSeaGreen" : "LightGray";
-  }
-
-  //Colors the text according to association with a node -- adjacent to clicked node or not?
-  function colorText(node, neighbors) {
-    return neighbors.includes(node.label) ? "DarkSeaGreen" : "DarkGray";
-  }
-
-  //Colors edges according to incidency to a clicked node.
-  function colorEdge(edge, clickedNode) {
-    return isIncidentEdge(edge, clickedNode) ? "LightGray" : "DarkSeaGreen";
-  }
-
-  //Called by nodeElements on click. Takes a clicked node, calculates neighbors, adjacent
-  //edges, and colors all elements in the graph accordingly.
-  function selectNode(clickedNode) {
-    var neighbors = getNeighbors(clickedNode);
-
-    nodeElements.attr("fill", node => colorNode(node, neighbors));
-    textElements.attr("fill", text => colorText(text, neighbors));
-    edgeElements.attr("stroke", edge => colorEdge(clickedNode, edge));
-  }
-
   //The persistent arrays to track progression of graph traversals -- DFS, BFS,
   //Djikstra's, A*, etc. while maintaining ability to render between ticks
   //(circumventing natural recursion).
@@ -213,15 +171,6 @@
   //Colors the text depending on whether the node is marked or not.
   function colorMarkedText(node) {
     return marked.includes(node) ? "DarkSeaGreen" : "DarkGray";
-  }
-
-  //Remembers nodes clicked in the past -- highlighting persists.
-  function persistentSelectNode(clickedNode) {
-    var neighbors = getNeighbors(clickedNode);
-    neighbors.forEach((neighbor) => { marked.push(neighbor); });
-
-    nodeElements.attr("fill", node => colorNode(node, marked));
-    textElements.attr("fill", text => colorText(text, marked));
   }
 
   //Sub-routine for DFS and BFS -- returns an array of unmarked vertices. Returns
@@ -262,7 +211,8 @@
     var current = fringe.pop();
 
     //Since we're not progressing recursively, we might consider already-visited
-    //vertices (since we add to the fringe before marking).
+    //vertices (since we add to the fringe before marking, and can't rely on order
+    //of calls to create a natural order).
     while (marked.includes(current)) {
       current = fringe.pop();
     }
