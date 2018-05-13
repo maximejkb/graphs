@@ -2,7 +2,7 @@
 
 //@source: Much of the D3 visualization framework was based off of this article:
 //https://medium.com/ninjaconcept/interactive-dynamic-force-directed-graphs-with-d3-da720c6d7811
-//which describes how to properly link data to SVG circles and lines, and implement 
+//which describes how to properly link data to SVG circles and lines, and implement
 //user interaction.
 
 //Get the height and width of the browser window.
@@ -69,9 +69,13 @@ function colorMarkedText(node) {
   return marked.includes(node) ? "DarkSeaGreen" : "DarkGray";
 }
 
-//Colors the edge weight text depending on whether the edge is selected or not.
+//Colors the edge depending on whether the edge is selected or not.
 function colorMarkedEdge(edge) {
   return (marked.includes(edge.source) || marked.includes(edge.target)) ? "DarkSeaGreen" : "LightGray";
+}
+
+function colorMarkedEdgeWeight(edge) {
+  return (marked.includes(edge.source) || marked.includes(edge.target)) ? "DarkSeaGreen" : "DarkGray";
 }
 
 //Directs coloration of the graph.
@@ -80,7 +84,7 @@ function colorGraph() {
   nodeElements.attr("fill", node => colorMarkedNode(node));
   textElements.attr("fill", text => colorMarkedText(text));
   edgeElements.attr("stroke", edge => colorMarkedEdge(edge));
-  weightElements.attr("fill", edge => colorMarkedEdge(edge));
+  weightElements.attr("fill", edge => colorMarkedEdgeWeight(edge));
 }
 
 //Delegator function. Directs traffic.
@@ -91,6 +95,8 @@ function startAlgorithm(current) {
     startPaths(current);
   } else if (document.getElementById("djikstras").checked) {
     startWeightedPaths(current);
+  } else if (document.getElementById("astar").checked) {
+    startSourceTargetPaths(current);
   } else {
     startNodeSearch(current);
   }
@@ -102,6 +108,8 @@ function runAlgorithm() {
     runPaths();
   } else if (document.getElementById("djikstras").checked) {
     runWeightedPaths();
+  } else if (document.getElementById("astar").checked) {
+    runSourceTargetPaths();
   } else {
     runNodeSearch();
   }

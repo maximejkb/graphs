@@ -88,7 +88,7 @@ function highlightShortestPaths() {
     return edgeTo.has(node) ? "DarkSeaGreen" : "LightGray";
   });
   textElements.attr("fill", node => {
-    return edgeTo.has(node) ? "DarkSeaGreen" : "LightGray";
+    return edgeTo.has(node) ? "DarkSeaGreen" : "DarkGray";
   });
   edgeElements.attr("stroke", edge => {
     return (edgeTo.get(edge.source) === edge.target
@@ -99,7 +99,7 @@ function highlightShortestPaths() {
   });
   weightElements.attr("fill", edge => {
     return (edgeTo.get(edge.source) === edge.target
-    || edgeTo.get(edge.target) === edge.source) ? "DarkSeaGreen" : "LightGray";
+    || edgeTo.get(edge.target) === edge.source) ? "DarkSeaGreen" : "DarkGray";
   }).attr("stroke-width", edge => {
     return (edgeTo.get(edge.source) === edge.target
     || edgeTo.get(edge.target) === edge.source) ? 2 : 1;

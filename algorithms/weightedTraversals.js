@@ -62,7 +62,6 @@ function startWeightedPaths(clickedNode) {
 //Runs Djikstra's algorithm.
 function runWeightedPaths() {
   var current = pqFringe.poll();
-
   //If the fringe is empty, we are done.
   if (typeof current === "undefined") {
     searchComplete = true;
@@ -101,8 +100,6 @@ function runWeightedPaths() {
     //Still want to update edgeTo and distTo in the search of a shortest path.
     relax(current, neighbor, distances);
   });
-
-  console.log(pqFringe.heap[0]);
 
   colorGraph();
 }
