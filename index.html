@@ -4,6 +4,7 @@
 <form id = "algorithmForm">
   <input type = "radio" name = "algorithm" value = "DFS" id = "dfs" /> DFS
   <input type = "radio" name = "algorithm" value = "BFS" id = "bfs" /> BFS
+  <input type = "radio" name = "algorithm" value = "BFSpaths" id = "bfspaths" /> BFS shortest paths
   <input type = "radio" name = "algorithm" value = "Djikstra's" /> Djikstra's
   <input type = "checkbox" name = "labels" value = "labels" onclick = "toggleLabels()" /> Hide vertex labels
   <input type = "checkbox" name = "weights" value = "weights" onclick = "toggleWeights()" /> Hide edge weights
@@ -261,7 +262,17 @@
   //Djikstra's, A*, etc. while maintaining ability to render between ticks
   //(circumventing natural recursion).
   var marked = new Array();
+  //A map to track which edge led to a vertex in a shortest path algorithm.
+  var edgeTo = new Map();
   var fringe = new Array();
+  //When we run shortest paths, we mark all neighboring vertices before visiting them,
+  //in order to "claim" them in a way. When we consider only unmarked neighbors of future
+  //vertices, we don't want neighbors of the current included because clearly, we're seeing
+  //it at current sooner, so the path through current is shorter. But because we can't rely
+  //on recursion to enforce a natural order, we have to also keep track of nodes we've actually
+  //visited, so that we don't visit in circles.
+  var visited = new Array();
+  //Toggles simulation to call runAlgorithm() on tick.
   var searchComplete = true;
 
   //Colors the node depending on whether it is marked or not.
@@ -274,8 +285,29 @@
     return marked.includes(node) ? "DarkSeaGreen" : "DarkGray";
   }
 
+  //Colors the edge weight text depending on whether the edge is selected or not.
   function colorMarkedEdge(edge) {
     return (marked.includes(edge.source) || marked.includes(edge.target)) ? "DarkSeaGreen" : "LightGray";
+  }
+
+  //Delegator function. Directs traffic.
+  function startAlgorithm(current) {
+    //Deselect any previous shortest path highlights.
+    edgeElements.attr("stroke-width", 1);
+    if (document.getElementById("bfspaths").checked) {
+      startPaths(current);
+    } else {
+      startNodeSearch(current);
+    }
+  }
+
+  //Delegator function. Directs traffic from tick() simulation function.
+  function runAlgorithm() {
+    if (document.getElementById("bfspaths").checked) {
+      runPaths();
+    } else {
+      runNodeSearch();
+    }
   }
 
   //Sub-routine for DFS and BFS -- returns an array of unmarked vertices. Returns
@@ -300,10 +332,12 @@
     var unmarkedNeighbors = getUnmarkedNeighbors(current);
     unmarkedNeighbors.sort(neighborSort);
     unmarkedNeighbors.forEach((neighbor) => {
-      fringe.push(neighbor);
+      if (neighbor != current) {
+        fringe.push(neighbor);
+      }
     });
 
-    //Toggle simulation to call runDFS() on each tick.
+    //Toggle simulation to call runSearch() on each tick.
     searchComplete = false;
 
     //Color nodes appropriately.
@@ -318,7 +352,7 @@
     if (document.getElementById("dfs").checked) {
       //Treats the Javascript array as a L.I.F.O. stack.
       return nodes.pop();
-    } else if (document.getElementById("bfs").checked) {
+    } else if (document.getElementById("bfs").checked || document.getElementById("bfspaths").checked) {
       //Treats the Javascript array as a F.I.F.O. queue.
       return nodes.shift();
     }
@@ -327,7 +361,7 @@
   //Sorts the array appropriately so that the label values influence order
   //of enqueuing to the fringe.
   function neighborSort(node1, node2) {
-    if (document.getElementById("bfs").checked) {
+    if (document.getElementById("bfs").checked || document.getElementById("bfspaths").checked) {
       //We want to insert in decreasing order for a F.I.F.O. stack (BFS).
       return parseInt(node1.label) - parseInt(node2.label);
     } else {
@@ -337,8 +371,8 @@
     }
   }
 
-  //Performs a "frame-by-frame" version of DFS for compatibility with rendering.
-  function runSearch() {
+  //Performs a "frame-by-frame" version of search for compatibility with rendering.
+  function runNodeSearch() {
     //Take the last item inserted from the stack.
     var current = visitAction(fringe);
 
@@ -360,9 +394,8 @@
       return;
     }
 
-    //Regular DFS begins here: Mark current.
+    //Regular search begins here: Mark current.
     marked.push(current);
-    console.log(current.label);
 
     //Fetch neighbors. Sort before inserting so we access in the correct order
     //without losing the priority of the overall list.
@@ -379,7 +412,119 @@
     //"Frame-by-frame" recursion (saving the state at the end of each round with
     //a persistent array of not-yet-considered neighbors).
     unmarkedNeighbors.forEach((neighbor) => {
-      fringe.push(neighbor);
+      if (neighbor != current) {
+        fringe.push(neighbor);
+      }
+    });
+  }
+
+  function startPaths(clickedNode) {
+    //Start off the marked array.
+    marked.push(clickedNode);
+    visited.push(clickedNode);
+    edgeTo.set(clickedNode, clickedNode);
+
+    //Give initial values to fringe.
+    var unmarkedNeighbors = getUnmarkedNeighbors(clickedNode);
+    unmarkedNeighbors.sort(neighborSort);
+    unmarkedNeighbors.forEach((neighbor) => {
+      if (neighbor != clickedNode) {
+        marked.push(neighbor);
+        fringe.push(neighbor);
+        edgeTo.set(neighbor, clickedNode);
+      }
+    });
+
+    //Toggle simulation to call runSearch() on each tick.
+    searchComplete = false;
+
+    //Color nodes appropriately.
+    nodeElements.attr("fill", node => colorMarkedNode(node));
+    textElements.attr("fill", text => colorMarkedText(text));
+    edgeElements.attr("stroke", edge => colorMarkedEdge(edge));
+    weightElements.attr("fill", edge => colorMarkedEdge(edge));
+  }
+
+  //Performs a "frame-by-frame" version of shortest paths for compatibility with rendering.
+  //Marks all neighboring vertices, as per shortest paths algorithm -- does not mark upon
+  //visitation, like in BFS/DFS normal. Therefore, visualization seems to slow (because
+  //each individual marking is not visualized).
+  function runPaths() {
+    //Take the first item inserted from the fringe.
+    var current = visitAction(fringe);
+
+    //Since we're not progressing recursively, we might consider already-visited
+    //vertices (since we add to the fringe before marking, and can't rely on order
+    //of calls to create a natural order).
+    while (visited.includes(current)) {
+      current = visitAction(fringe);
+    }
+
+    //If we empty the fringe looking for unvisited vertices, it means there are no
+    //unvisited and unmarked vertices. Therefore, we're done. The frame-by-frame
+    //analog of a base case.
+    if (current == undefined) {
+      searchComplete = true;
+      //Reset persistent arrays. Clear colorings.
+      marked = new Array();
+      visited = new Array();
+      fringe = new Array();
+      nodeElements.attr("fill", node => colorMarkedNode(node));
+      textElements.attr("fill", text => colorMarkedText(text));
+      edgeElements.attr("stroke", edge => colorMarkedEdge(edge));
+      weightElements.attr("fill", edge => colorMarkedEdge(edge));
+      highlightShortestPaths();
+      edgeTo = new Map();
+      return;
+    }
+
+    //This node has already been marked since it is a neighbor of some other previously
+    //visited node. But now we have to register that it has been visited.
+    visited.push(current);
+
+    //Fetch neighbors. Sort before inserting so we access in the correct order
+    //without losing the priority of the overall list.
+    var unmarkedNeighbors = getUnmarkedNeighbors(current);
+    unmarkedNeighbors.sort(neighborSort);
+
+    //Color nodes appropriately. Green edges represent edges to/from items that are
+    //marked -- the edges to nodes that are in the fringe.
+    nodeElements.attr("fill", node => colorMarkedNode(node));
+    textElements.attr("fill", text => colorMarkedText(text));
+    edgeElements.attr("stroke", edge => colorMarkedEdge(edge));
+    weightElements.attr("fill", edge => colorMarkedEdge(edge));
+    //"Frame-by-frame" recursion (saving the state at the end of each round with
+    //a persistent array of not-yet-considered neighbors).
+    unmarkedNeighbors.forEach((neighbor) => {
+      if (neighbor != current) {
+        marked.push(neighbor);
+        fringe.push(neighbor);
+        edgeTo.set(neighbor, current);
+      }
+    });
+  }
+
+  function highlightShortestPaths() {
+    //Color nodes appropriately.
+    nodeElements.attr("fill", node => {
+      return edgeTo.has(node) ? "DarkSeaGreen" : "LightGray";
+    });
+    textElements.attr("fill", node => {
+      return edgeTo.has(node) ? "DarkSeaGreen" : "LightGray";
+    });
+    edgeElements.attr("stroke", edge => {
+      return (edgeTo.get(edge.source) === edge.target
+      || edgeTo.get(edge.target) === edge.source) ? "DarkSeaGreen" : "LightGray";
+    }).attr("stroke-width", edge => {
+      return (edgeTo.get(edge.source) === edge.target
+      || edgeTo.get(edge.target) === edge.source) ? 2 : 1;
+    });
+    weightElements.attr("fill", edge => {
+      return (edgeTo.get(edge.source) === edge.target
+      || edgeTo.get(edge.target) === edge.source) ? "DarkSeaGreen" : "LightGray";
+    }).attr("stroke-width", edge => {
+      return (edgeTo.get(edge.source) === edge.target
+      || edgeTo.get(edge.target) === edge.source) ? 2 : 1;
     });
   }
 
@@ -412,7 +557,7 @@
   .enter().append("circle")
     .attr("r", 10)
     .attr("fill", "LightGray")
-    .on("click", startNodeSearch);
+    .on("click", startAlgorithm);
 
   //Link the dragDrop function to a call from a node.
   nodeElements.call(dragDrop);
@@ -453,7 +598,7 @@
       //happening mid-search, so keep alpha artificially elevated.
       simulation.alphaTarget(0.1).restart();
       if (timer == 0) {
-        runSearch();
+        runAlgorithm();
       }
     }
     timer = (timer + 1) % 10;
