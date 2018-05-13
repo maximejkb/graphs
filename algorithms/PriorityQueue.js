@@ -1,4 +1,8 @@
-//Bare-bones binary min-heap based PriorityQueue.
+//@author: Maxime Kawawa-Beaudan
+
+//Bare-bones binary min-heap based PriorityQueue. Constructor requires a comparison
+//that will be used as the PQ's natural order. Poll returns the minimum item in the
+//queue, and push adds an item to the queue. For use in Djikstra's algorithm and A*.
 class PriorityQueue {
   //Takes in a two-argument function comparator. Valid comparators take parameters
   //(this, other) and return a negative number if this is smaller than other, a
@@ -86,6 +90,17 @@ class PriorityQueue {
     } else {
       return;
     }
+  }
+
+  contains(item) {
+    return this.heap.includes(item);
+  }
+
+  updatePriority(item) {
+    var index = this.heap.indexOf(item);
+    this.bubble(index);
+    index = this.heap.indexOf(item);
+    this.sink(index);
   }
 
   //Returns the integer index of the parent of the item at index.

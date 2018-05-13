@@ -1,3 +1,5 @@
+//@author: Maxime Kawawa-Beaudan
+
 //Sub-routine for DFS and BFS -- returns an array of unmarked vertices. Returns
 //empty array if there are no more unmarked vertices.
 function getUnmarkedNeighbors(current) {
@@ -8,7 +10,7 @@ function getUnmarkedNeighbors(current) {
       neighbors.push(edge.target);
     }
     return neighbors;
-  }, [current]);
+  }, []);
 }
 
 //Initiates DFS/BFS starting at the vertex clicked.
@@ -20,9 +22,7 @@ function startNodeSearch(current) {
   var unmarkedNeighbors = getUnmarkedNeighbors(current);
   unmarkedNeighbors.sort(neighborSort);
   unmarkedNeighbors.forEach((neighbor) => {
-    if (neighbor != current) {
-      fringe.push(neighbor);
-    }
+    fringe.push(neighbor);
   });
 
   //Toggle simulation to call runSearch() on each tick.
@@ -91,8 +91,6 @@ function runNodeSearch() {
   //"Frame-by-frame" recursion (saving the state at the end of each round with
   //a persistent array of not-yet-considered neighbors).
   unmarkedNeighbors.forEach((neighbor) => {
-    if (neighbor != current) {
-      fringe.push(neighbor);
-    }
+    fringe.push(neighbor);
   });
 }

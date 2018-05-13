@@ -1,3 +1,5 @@
+//@author: Maxime Kawawa-Beaudan
+
 //When we run shortest paths, we mark all neighboring vertices before visiting them,
 //in order to "claim" them in a way. When we consider only unmarked neighbors of future
 //vertices, we don't want neighbors of the current included because clearly, we're seeing
@@ -16,11 +18,9 @@ function startPaths(clickedNode) {
   var unmarkedNeighbors = getUnmarkedNeighbors(clickedNode);
   unmarkedNeighbors.sort(neighborSort);
   unmarkedNeighbors.forEach((neighbor) => {
-    if (neighbor != clickedNode) {
-      marked.push(neighbor);
-      fringe.push(neighbor);
-      edgeTo.set(neighbor, clickedNode);
-    }
+    marked.push(neighbor);
+    fringe.push(neighbor);
+    edgeTo.set(neighbor, clickedNode);
   });
 
   //Toggle simulation to call runSearch() on each tick.
@@ -74,7 +74,7 @@ function runPaths() {
   //"Frame-by-frame" recursion (saving the state at the end of each round with
   //a persistent array of not-yet-considered neighbors).
   unmarkedNeighbors.forEach((neighbor) => {
-    if (neighbor != current && !(fringe.includes(neighbor))) {
+    if (!fringe.includes(neighbor)) {
       marked.push(neighbor);
       fringe.push(neighbor);
       edgeTo.set(neighbor, current);
