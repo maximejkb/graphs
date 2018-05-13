@@ -14,6 +14,9 @@ var server = http.createServer((request, response) => {
   //As above, but for CSS files.
   } else if (/^\/[a-zA-Z0-9\/]*.css$/.test(request.url.toString())) {
     sendFileContent(response, request.url.toString().substring(1), "text/css");
+  //Respond to request for the favicon.
+  } else if (request.url == "/favicon.ico") {
+    sendFileContent(response, "favicon.ico", "image/x-icon");
   //Catch-all: log unrecognized requests to the console.
   } else {
     console.log("Requested url: " + request.url);
