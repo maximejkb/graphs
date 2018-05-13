@@ -18,7 +18,7 @@ svg.attr("width", w).attr("height", h);
 //each other (a positive strength would simulate gravity/attraction). The
 //force 'center' puts the nodes in the center of the SVG canvas.
 var simulation = d3.forceSimulation()
-.force('charge', d3.forceManyBody().strength(-150).distanceMax(400))
+.force('charge', d3.forceManyBody().strength(-200).distanceMax(300))
 .force('center', d3.forceCenter(w / 2, h / 2));
 
 //We also add a link force, proportional to the strength of each link.
