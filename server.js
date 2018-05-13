@@ -3,7 +3,9 @@ const fs = require("fs");
 const hostname = "127.0.0.1";
 const port = 3000;
 
-//@source https://github.com/dotnetcurry/node.js-html-static-content/blob/master/server.js
+//@source: This NodeJS framework, which helps to link together all of the separate
+//resources and compile them into one HTTP response, is based on this article:
+//https://github.com/dotnetcurry/node.js-html-static-content/blob/master/server.js
 var server = http.createServer((request, response) => {
   //If the request is for the main page, parse HTML and send.
   if (request.url == "/") {
