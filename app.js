@@ -189,9 +189,9 @@ simulation.nodes(data).on("tick", () => {
     }
   }
 
-  //(11 - x) in order to reverse the value so that left is slow, right is quick,
-  //on the range [0, 10].
-  var interval = 11 - document.getElementById("animationspeed").value;
+  //(21 - x) in order to reverse the value so that left is slow, right is quick,
+  //on the range [1, 20].
+  var interval = 21 - document.getElementById("animationspeed").value;
   timer = (timer + 1) % interval;
 
   nodeElements
