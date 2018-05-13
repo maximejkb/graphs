@@ -1,0 +1,7 @@
+.algorithmForm {
+  float: right;
+  position: fixed;
+}
+input {
+  display: inline;
+}
