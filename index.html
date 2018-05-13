@@ -1,1 +1,27 @@
-<!DOCTYPE html><html><head><link rel="stylesheet" href="/main.css"></head><body><h1>Welcome to Harp.</h1><h3>This is yours to own. Enjoy.</h3></body></html>
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<link rel="icon" href="favicon.ico" type="image/x-icon">
+<link rel = "stylesheet" href = "style.css" type = "text/css" />
+<script src= "https://d3js.org/d3.v4.min.js"></script>
+<script src = "algorithms/PriorityQueue.js"></script>
+
+<form id = "algorithmForm">
+  <input type = "radio" name = "algorithm" value = "DFS" id = "dfs" /> DFS
+  <input type = "radio" name = "algorithm" value = "BFS" id = "bfs" /> BFS
+  <input type = "radio" name = "algorithm" value = "BFSpaths" id = "bfspaths" /> BFS shortest paths
+  <input type = "radio" name = "algorithm" value = "Djikstra's" id = "djikstras" /> Djikstra's shortest weighted paths
+  <input type = "radio" name = "algorithm" value = "Astar" id = "astar" /> A* shortest source-target path
+  <input type = "checkbox" name = "labels" value = "labels" onclick = "toggleLabels()" /> Hide vertex labels
+  <input type = "checkbox" name = "weights" value = "weights" onclick = "toggleWeights()" /> Hide edge weights |
+  <input type = "range" min = "1" max = "10" id = "animationspeed" /> Animation speed
+</form>
+<svg width = "1000" height = "1000"> </svg>
+
+<script src = "data/data.js"></script>
+<script src = "app.js"></script>
+<script src = "algorithms/searchTraversals.js"></script>
+<script src = "algorithms/pathTraversals.js"></script>
+<script src = "algorithms/weightedTraversals.js"></script>
+<script src = "algorithms/sourceTargetPath.js"></script>
+</html>
