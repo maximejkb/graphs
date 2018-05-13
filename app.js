@@ -27,7 +27,7 @@ simulation.force('link', d3.forceLink()
   .distance(edge => edge.distance));
 
 //Finally, we set the alphaTarget (asymptote of exponentially-decaying cooling
-//parameter) to 0.2, so it never reaches alhpaMin.
+//parameter) to 0.2, so it never reaches alphaMin, which is generally 0.001.
 simulation.alphaTarget(0.1);
 
 //Now we define a function to be called on drag-drop events.
@@ -37,7 +37,7 @@ var dragDrop = d3.drag()
     node.fy = node.y;
   })
   .on('drag', node => {
-    simulation.alphaTarget(0.7).restart();
+    simulation.alphaTarget(0.1).restart();
     node.fx = d3.event.x;
     node.fy = d3.event.y;
   })
@@ -191,7 +191,7 @@ simulation.nodes(data).on("tick", () => {
 
   //(11 - x) in order to reverse the value so that left is slow, right is quick,
   //on the range [0, 10].
-  var interval = 11 - document.getElementById("animationspeed").value;
+  var interval = 21 - document.getElementById("animationspeed").value;
   timer = (timer + 1) % interval;
 
   nodeElements
