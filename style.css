@@ -5,3 +5,8 @@
 input {
   display: inline;
 }
+form {
+  font-family: "Times New Roman";
+  font-weight: bold;
+  color: Gray;
+}

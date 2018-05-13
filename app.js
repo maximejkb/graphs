@@ -1,3 +1,10 @@
+//@author: Maxime Kawawa-Beaudan
+
+//@source: Much of the D3 visualization framework was based off of this article:
+//https://medium.com/ninjaconcept/interactive-dynamic-force-directed-graphs-with-d3-da720c6d7811
+//which describes how to properly link data to SVG circles and lines, and implement 
+//user interaction.
+
 //Get the height and width of the browser window.
 var w = window.innerWidth;
 var h = window.innerHeight;
@@ -67,12 +74,23 @@ function colorMarkedEdge(edge) {
   return (marked.includes(edge.source) || marked.includes(edge.target)) ? "DarkSeaGreen" : "LightGray";
 }
 
+//Directs coloration of the graph.
+function colorGraph() {
+  //Color nodes appropriately.
+  nodeElements.attr("fill", node => colorMarkedNode(node));
+  textElements.attr("fill", text => colorMarkedText(text));
+  edgeElements.attr("stroke", edge => colorMarkedEdge(edge));
+  weightElements.attr("fill", edge => colorMarkedEdge(edge));
+}
+
 //Delegator function. Directs traffic.
 function startAlgorithm(current) {
   //Deselect any previous shortest path highlights.
   edgeElements.attr("stroke-width", 1);
   if (document.getElementById("bfspaths").checked) {
     startPaths(current);
+  } else if (document.getElementById("djikstras").checked) {
+    startWeightedPaths(current);
   } else {
     startNodeSearch(current);
   }
@@ -82,24 +100,12 @@ function startAlgorithm(current) {
 function runAlgorithm() {
   if (document.getElementById("bfspaths").checked) {
     runPaths();
+  } else if (document.getElementById("djikstras").checked) {
+    runWeightedPaths();
   } else {
     runNodeSearch();
   }
 }
-
-//Sub-routine for DFS and BFS -- returns an array of unmarked vertices. Returns
-//empty array if there are no more unmarked vertices.
-function getUnmarkedNeighbors(current) {
-  return edges.reduce((neighbors, edge) => {
-    if (!(marked.includes(edge.source)) && edge.target.label === current.label) {
-      neighbors.push(edge.source);
-    } else if (!(marked.includes(edge.target)) && edge.source.label === current.label) {
-      neighbors.push(edge.target);
-    }
-    return neighbors;
-  }, [current]);
-}
-
 
 //Toggles text visibility: if opacity is 0, sets to 1. If opacity is 1, sets
 //to 0.
@@ -176,7 +182,7 @@ simulation.nodes(data).on("tick", () => {
   }
 
   //(11 - x) in order to reverse the value so that left is slow, right is quick,
-  //on the range [0, 10]. 
+  //on the range [0, 10].
   var interval = 11 - document.getElementById("animationspeed").value;
   timer = (timer + 1) % interval;
 

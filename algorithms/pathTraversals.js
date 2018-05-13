@@ -26,11 +26,7 @@ function startPaths(clickedNode) {
   //Toggle simulation to call runSearch() on each tick.
   searchComplete = false;
 
-  //Color nodes appropriately.
-  nodeElements.attr("fill", node => colorMarkedNode(node));
-  textElements.attr("fill", text => colorMarkedText(text));
-  edgeElements.attr("stroke", edge => colorMarkedEdge(edge));
-  weightElements.attr("fill", edge => colorMarkedEdge(edge));
+  colorGraph();
 }
 
 //Performs a "frame-by-frame" version of shortest paths for compatibility with rendering.
@@ -57,10 +53,7 @@ function runPaths() {
     marked = new Array();
     visited = new Array();
     fringe = new Array();
-    nodeElements.attr("fill", node => colorMarkedNode(node));
-    textElements.attr("fill", text => colorMarkedText(text));
-    edgeElements.attr("stroke", edge => colorMarkedEdge(edge));
-    weightElements.attr("fill", edge => colorMarkedEdge(edge));
+    colorGraph();
     highlightShortestPaths();
     edgeTo = new Map();
     return;
@@ -77,10 +70,7 @@ function runPaths() {
 
   //Color nodes appropriately. Green edges represent edges to/from items that are
   //marked -- the edges to nodes that are in the fringe.
-  nodeElements.attr("fill", node => colorMarkedNode(node));
-  textElements.attr("fill", text => colorMarkedText(text));
-  edgeElements.attr("stroke", edge => colorMarkedEdge(edge));
-  weightElements.attr("fill", edge => colorMarkedEdge(edge));
+  colorGraph();
   //"Frame-by-frame" recursion (saving the state at the end of each round with
   //a persistent array of not-yet-considered neighbors).
   unmarkedNeighbors.forEach((neighbor) => {

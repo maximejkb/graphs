@@ -1,3 +1,16 @@
+//Sub-routine for DFS and BFS -- returns an array of unmarked vertices. Returns
+//empty array if there are no more unmarked vertices.
+function getUnmarkedNeighbors(current) {
+  return edges.reduce((neighbors, edge) => {
+    if (!(marked.includes(edge.source)) && edge.target.label === current.label) {
+      neighbors.push(edge.source);
+    } else if (!(marked.includes(edge.target)) && edge.source.label === current.label) {
+      neighbors.push(edge.target);
+    }
+    return neighbors;
+  }, [current]);
+}
+
 //Initiates DFS/BFS starting at the vertex clicked.
 function startNodeSearch(current) {
   //Start off the marked array.
@@ -15,11 +28,7 @@ function startNodeSearch(current) {
   //Toggle simulation to call runSearch() on each tick.
   searchComplete = false;
 
-  //Color nodes appropriately.
-  nodeElements.attr("fill", node => colorMarkedNode(node));
-  textElements.attr("fill", text => colorMarkedText(text));
-  edgeElements.attr("stroke", edge => colorMarkedEdge(edge));
-  weightElements.attr("fill", edge => colorMarkedEdge(edge));
+  colorGraph();
 }
 
 //Performs the appropriate action depending on algorithm.
@@ -77,12 +86,7 @@ function runNodeSearch() {
   var unmarkedNeighbors = getUnmarkedNeighbors(current);
   unmarkedNeighbors.sort(neighborSort);
 
-  //Color nodes appropriately. Green edges represent edges to/from items that are
-  //marked -- the edges to nodes that are in the fringe.
-  nodeElements.attr("fill", node => colorMarkedNode(node));
-  textElements.attr("fill", text => colorMarkedText(text));
-  edgeElements.attr("stroke", edge => colorMarkedEdge(edge));
-  weightElements.attr("fill", edge => colorMarkedEdge(edge));
+  colorGraph();
 
   //"Frame-by-frame" recursion (saving the state at the end of each round with
   //a persistent array of not-yet-considered neighbors).
