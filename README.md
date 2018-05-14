@@ -7,7 +7,11 @@ Hope to implement minimum-spanning-tree algorithms like Prim's and Kruskal's.
 NOTE: The heuristic for A* doesn't rely on some inherent characteristic of the graph. In fact, it estimates distance
 to the target using the x, y position of the node object on the SVG canvas. It calculates these distances as it pushes
 to the P.Q. Since this is not a static graph, but a dynamic, moving visualization, these distances change as the graph
-moves! So the shortest path can be different for the same two nodes on different runs. Something to fix.
+moves! So the shortest path can be different for the same two nodes on different runs. Something to fix. Also, the weight
+of the edge doesn't correspond directly to the length of the edge. The graph simulation takes the weight as a parameter to
+a force it applies to the nodes. It balances these forces between other connected nodes. The weight is more like the strength
+of the link. So the heuristic isn't actually representative of the weight because the weight isn't reflected in the length (x
+,y) position of the nodes. Need to come up with a new heuristic.
 
 Master branch is for development and uses NodeJS. From this branch, one can edit a local version of the application.
 Navigate to the directory and run "node app.js" from the command line. A local version of the
