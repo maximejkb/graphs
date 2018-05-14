@@ -201,5 +201,5 @@ var edges = [
   {source: "73", target: "74", distance: 20},
   {source: "74", target: "76", distance: 50},
   {source: "75", target: "76", distance: 10},
-  {source: "76", target: "73", distance: 10},
+  {source: "76", target: "73", distance: 10}
 ]

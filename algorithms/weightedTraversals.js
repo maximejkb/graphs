@@ -43,6 +43,8 @@ var pqFringe = new PriorityQueue(compareNodes);
 
 //Initiates Djikstra's algorithm for finding the shortest weighted path.
 function startWeightedPaths(clickedNode) {
+  //In case A* was just run and pqFringe is using comparePaths.
+  var pqFringe = new PriorityQueue(compareNodes);
   //Initialize all nodes as having infinite distance from the source.
   data.forEach((node) => {
     distTo.set(node, Number.MAX_SAFE_INTEGER);
