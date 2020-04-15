@@ -9,6 +9,8 @@
 var w = window.innerWidth;
 var h = window.innerHeight;
 
+document.getElementById("newGraph").onclick = addGraph;
+
 //Select the svg element of the HTML page and set its height and width to full.
 var svg = d3.select("svg");
 svg.attr("width", w).attr("height", h);
@@ -129,31 +131,39 @@ function toggleWeights() {
   weightElements.attr("fill-opacity", 1 - currentOpacity);
 }
 
-//Create SVG line elements for each of our links/edges.
-var edgeElements = svg.append('g')
+var edgeElements;
+var nodeElements;
+var textElements;
+var weightElements;
+
+function updateData() {
+  svg.selectAll("*").remove();
+
+  //Create SVG line elements for each of our links/edges.
+  edgeElements = svg.append('g')
   .selectAll("line")
   .data(edges)
   .enter().append("line")
     .attr("stroke-width", 1)
     .attr("stroke", "LightGray");
 
-//Create SVG circles for each of our data points.
-var nodeElements = svg.append('g')
-.selectAll("circle")
-.data(data)
-.enter().append("circle")
+  //Create SVG circles for each of our data points.
+  nodeElements = svg.append('g')
+  .selectAll("circle")
+  .data(data)
+  .enter().append("circle")
   .attr("r", 10)
   .attr("fill", "LightGray")
   .on("click", startAlgorithm);
 
-//Link the dragDrop function to a call from a node.
-nodeElements.call(dragDrop);
+  //Link the dragDrop function to a call from a node.
+  nodeElements.call(dragDrop);
 
-//Create SVG text labels for each of our data points.
-var textElements = svg.append('g')
-.selectAll("text")
-.data(data)
-.enter().append("text")
+  //Create SVG text labels for each of our data points.
+  textElements = svg.append('g')
+  .selectAll("text")
+  .data(data)
+  .enter().append("text")
   .text(node => node.label)
   .attr("font-size", 15)
   .attr("fill", "DarkGray")
@@ -161,7 +171,7 @@ var textElements = svg.append('g')
   .attr("dx", 15)
   .attr("dy", 5);
 
-var weightElements = svg.append('g')
+  weightElements = svg.append('g')
   .selectAll("text")
   .data(edges)
   .enter().append("text")
@@ -172,12 +182,12 @@ var weightElements = svg.append('g')
     .attr("dx", -2)
     .attr("dy", 0);
 
-//A timer which slows the progression of the graph traversal (only progresses the
-//traversal every 5 ticks).
-var timer = 0;
+  //A timer which slows the progression of the graph traversal (only progresses the
+  //traversal every 5 ticks).
+  var timer = 0;
 
-//On each time tick of the simulation, this function recalculates position.
-simulation.nodes(data).on("tick", () => {
+  //On each time tick of the simulation, this function recalculates position.
+  simulation.nodes(data).on("tick", () => {
   //Increment timer and runDFS if the search is still ongoing.
   if (!searchComplete) {
     //If the simulation's alpha ("cooling parameter") falls below the threshold
@@ -208,7 +218,19 @@ simulation.nodes(data).on("tick", () => {
   weightElements
   .attr("x", edge => (edge.source.x + edge.target.x) / 2)
   .attr("y", edge => (edge.source.y + edge.target.y) / 2);
-});
+  });
 
-//Link the link force in the simulation to the edges dataset.
-simulation.force('link').links(edges);
+  //Link the link force in the simulation to the edges dataset.
+  simulation.force('link').links(edges);
+
+
+  marked = new Array();
+  //A map to track which edge led to a vertex in a shortest path algorithm.
+  edgeTo = new Map();
+  fringe = new Array();
+  //Toggles simulation to call runAlgorithm() on tick.
+  searchComplete = true;
+
+  document.getElementById("showLabels").checked = false;
+  document.getElementById("showWeights").checked = false;
+}

@@ -1,23 +1,32 @@
-var N = 200;
-var p = Math.log(N) / N - 0.015;
-var maxLength = 60;
-var minLength = 10;
-
 var data = [];
 var edges = [];
-for (var i = 0; i < N; i++) {
-  data.push({label: i.toString()})
 
-  for (var j = i; j < N; j++) {
-    if (Math.random() < p) {
-      edges.push({
-        source: i.toString(),
-        target: j.toString(),
-        distance: Math.floor((Math.random() * (maxLength - minLength + 1))) + minLength
-      })
+function addGraph() {
+  var N =  document.getElementById("numNodes").value;
+  var p =  document.getElementById("edgeProb").value; // Math.log(N) / N - 0.015;
+  var maxLength = 60;
+  var minLength = 10;
+
+  data = [];
+  edges = [];
+
+  for (var i = 0; i < N; i++) {
+    data.push({label: i.toString()})
+  
+    for (var j = i + 1; j < N; j++) {
+      if (Math.random() < p) {
+        edges.push({
+          source: i.toString(),
+          target: j.toString(),
+          distance: Math.floor((Math.random() * (maxLength - minLength + 1))) + minLength
+        })
+      }
     }
-  }
+  }  
+
+  updateData();
 }
+
 
 function addNode() {
   //What's the largest label we have? Our new node should have this value + 1 as its label.
@@ -105,9 +114,9 @@ function addNode() {
       }
     }
 
-    //(11 - x) in order to reverse the value so that left is slow, right is quick,
+    //(max - x) in order to reverse the value so that left is slow, right is quick,
     //on the range [0, 10].
-    var interval = 21 - document.getElementById("animationspeed").value;
+    var interval = 20 - document.getElementById("animationspeed").value;
     timer = (timer + 1) % interval;
 
     nodeElements

@@ -12,9 +12,13 @@
   <input type = "radio" name = "algorithm" value = "BFSpaths" id = "bfspaths" /> BFS shortest paths
   <input type = "radio" name = "algorithm" value = "Djikstra's" id = "djikstras" /> Djikstra's shortest weighted paths
   <input type = "radio" name = "algorithm" value = "Astar" id = "astar" /> A* shortest source-target path
-  <input type = "checkbox" name = "labels" value = "labels" onclick = "toggleLabels()" /> Hide vertex labels
-  <input type = "checkbox" name = "weights" value = "weights" onclick = "toggleWeights()" /> Hide edge weights |
-  <input type = "range" min = "1" max = "20" id = "animationspeed" /> Animation speed
+  <input type = "checkbox" name = "labels" value = "labels" id = "showLabels" onclick = "toggleLabels()" /> Hide vertex labels
+  <input type = "checkbox" name = "weights" value = "weights" id = "showWeights" onclick = "toggleWeights()" /> Hide edge weights |
+  <input type = "range" min = "0" max = "20" id = "animationspeed" /> Animation speed | 
+
+  Erdös-Renyi graph model: <input type= "number" id = "numNodes" /> N
+  <input type= "range" min = "0" max = "1" step = "0.01" id = "edgeProb" /> p
+  <input type= "button" id = "newGraph" callback="addGraph" /> New Graph
 </form>
 <svg width = "1000" height = "1000"> </svg>
 
