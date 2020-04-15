@@ -91,6 +91,7 @@ function colorGraph() {
 function startAlgorithm(current) {
   //Deselect any previous shortest path highlights.
   edgeElements.attr("stroke-width", 1);
+
   if (document.getElementById("bfspaths").checked) {
     startPaths(current);
   } else if (document.getElementById("djikstras").checked) {
@@ -129,28 +130,51 @@ function toggleWeights() {
   weightElements.attr("fill-opacity", 1 - currentOpacity);
 }
 
+var addNodeBox = svg.append("rect")
+  .attr("x", (3 * w) / 8)
+  .attr("y", (3 * h) / 8)
+  .attr("rx", 10)
+  .attr("ry", 10)
+  .attr("fill-opacity", 0)
+  .attr("stroke", "LightGray")
+  .attr("stroke-opacity", 0.5)
+  .attr("width", w / 4)
+  .attr("height", h / 4);
+
+//Link the addNode function to call from the rectangle if addNodeBox is clicked.
+var clickBox = d3.selectAll("rect")
+    .on("click", addNode);
+
+//To distinguish between classes of objects in the SVG canvas, we'll append different
+//types of objects to different named groups.
+var edgeGroup = svg.append("g").attr("class", "edges");
+var nodeGroup = svg.append("g").attr("class", "nodes");
+var labelGroup = svg.append("g").attr("class", "labels");
+var weightGroup = svg.append("g").attr("class", "weights");
+
+//Create SVG circles for each of our data points.
+var nodeElements = nodeGroup.append('g')
+.selectAll("circle")
+.data(data)
+.enter().append("circle")
+  .attr("r", 10)
+  .attr("fill", "LightGray");
+
+//Link the dragDrop function to a call from a node.
+nodeElements.call(dragDrop);
+
+nodeElements.on("click", startAlgorithm);
+
 //Create SVG line elements for each of our links/edges.
-var edgeElements = svg.append('g')
+var edgeElements = edgeGroup.append('g')
   .selectAll("line")
   .data(edges)
   .enter().append("line")
     .attr("stroke-width", 1)
     .attr("stroke", "LightGray");
 
-//Create SVG circles for each of our data points.
-var nodeElements = svg.append('g')
-.selectAll("circle")
-.data(data)
-.enter().append("circle")
-  .attr("r", 10)
-  .attr("fill", "LightGray")
-  .on("click", startAlgorithm);
-
-//Link the dragDrop function to a call from a node.
-nodeElements.call(dragDrop);
-
 //Create SVG text labels for each of our data points.
-var textElements = svg.append('g')
+var textElements = labelGroup.append('g')
 .selectAll("text")
 .data(data)
 .enter().append("text")
@@ -161,7 +185,7 @@ var textElements = svg.append('g')
   .attr("dx", 15)
   .attr("dy", 5);
 
-var weightElements = svg.append('g')
+var weightElements = weightGroup.append('g')
   .selectAll("text")
   .data(edges)
   .enter().append("text")

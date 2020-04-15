@@ -11,7 +11,7 @@ moves! So the shortest path can be different for the same two nodes on different
 of the edge doesn't correspond directly to the length of the edge. The graph simulation takes the weight as a parameter to
 a force it applies to the nodes. It balances these forces between other connected nodes. The weight is more like the strength
 of the link. So the heuristic isn't actually representative of the weight because the weight isn't reflected in the length (x
-,y) position of the nodes. Need to come up with a new heuristic.
+,y) position of the nodes. Need to come up with a new heuristic.so
 
 Master branch is for development and uses NodeJS. From this branch, one can edit a local version of the application.
 Navigate to the directory and run "node app.js" from the command line. A local version of the

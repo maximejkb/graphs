@@ -43,8 +43,6 @@ var pqFringe = new PriorityQueue(compareNodes);
 
 //Initiates Djikstra's algorithm for finding the shortest weighted path.
 function startWeightedPaths(clickedNode) {
-  //In case A* was just run and pqFringe is using comparePaths.
-  var pqFringe = new PriorityQueue(compareNodes);
   //Initialize all nodes as having infinite distance from the source.
   data.forEach((node) => {
     distTo.set(node, Number.MAX_SAFE_INTEGER);
@@ -87,7 +85,7 @@ function runWeightedPaths() {
 
   //A Map initialized with an array of key-value pairs (arrays of length two). These
   //arrays created by reducing edges dataset, adding a tuple of (target node, distTo
-  //target node) for every edge incident to current and a target node.
+  //target node) for every edgwee incident to current and a target node.
   var distances = new Map(edges.reduce((dist, edge) => {
     if (neighbors.includes(edge.source) && edge.target == current) {
       dist.push([edge.source, edge.distance]);
