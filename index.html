@@ -14,10 +14,12 @@
   <input type = "radio" name = "algorithm" value = "Astar" id = "astar" /> A* shortest source-target path
   <input type = "checkbox" name = "labels" value = "labels" id = "showLabels" onclick = "toggleLabels()" /> Hide vertex labels
   <input type = "checkbox" name = "weights" value = "weights" id = "showWeights" onclick = "toggleWeights()" /> Hide edge weights |
-  <input type = "range" min = "0" max = "20" id = "animationspeed" /> Animation speed | 
+  <input type = "range" min = "0" max = "20" id = "animationspeed" /> Animation speed |
 
-  Erdös-Renyi graph model: <input type= "number" id = "numNodes" /> N
-  <input type= "range" min = "0" max = "1" step = "0.01" id = "edgeProb" /> p
+  Erdös-Renyi graph model: N (# vertices) = <input type= "number" id = "numNodes" oninput="edgeProb.value=Math.log(numNodes.value) / numNodes.value; pOut.value = edgeProb.value; defaultPOut.value = Math.log(numNodes.value) / numNodes.value;"/>
+  | p (edge probability) = <output name="pOutName" id="pOut">0.500</output>
+  <input type= "range" min = "0" max = "1" step = "0.001" id = "edgeProb" oninput="pOut.value = edgeProb.value"/>
+  | <a href="https://en.wikipedia.org/wiki/Erd%C5%91s%E2%80%93R%C3%A9nyi_model#Properties_of_G(n,_p)">Connectedness Threshold</a>: <output name="defaultP" id="defaultPOut">0.000</output>
   <input type= "button" id = "newGraph" callback="addGraph" /> New Graph
 </form>
 <svg width = "1000" height = "1000"> </svg>
