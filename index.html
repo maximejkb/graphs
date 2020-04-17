@@ -19,10 +19,48 @@
   Erdös-Renyi graph model: N (# vertices) = <input type= "number" id = "numNodes" oninput="edgeProb.value=Math.log(numNodes.value) / numNodes.value; defaultPOut.value = Math.log(numNodes.value) / numNodes.value;"/>
   | p (edge probability in [0, 1]) =
   <input type= "number" id = "edgeProb"/>
-  | <a href="https://en.wikipedia.org/wiki/Erd%C5%91s%E2%80%93R%C3%A9nyi_model#Properties_of_G(n,_p)">Connectedness Threshold</a>: <output name="defaultP" id="defaultPOut">0.000</output>
-  <input type= "button" id = "newGraph" callback="addGraph" /> New Graph
+  | Connectedness Threshold: <output name="defaultP" id="defaultPOut">0.000</output>
+  <button type= "button" id = "newGraph" callback="addGraph"> New Graph</button>
 </form>
+
 <svg width = "1000" height = "1000"> </svg>
+
+<h1 style="text-align: center">
+  Graph Visualizer
+</h1>
+
+<p style="font-size:20px; width:50%; text-align:center; margin-left:25%">
+This is a simple tool for visualizing graphs. I made it when I was learning about graph theory for the first time because I found traversal and search algorithms super interesting. I updated it later to include the <a href="https://en.wikipedia.org/wiki/Erd%C5%91s%E2%80%93R%C3%A9nyi_model">Erdős–Rényi</a> model.
+</p>
+
+<h1 style="text-align: center">
+  Usage
+</h1>
+
+<p style="font-size:20px; width:50%; text-align:center; margin-left:25%">
+Generate a graph using Erdős–Rényi by setting N and p, then clicking the New Graph button. p will by default be set to the <a href="https://en.wikipedia.org/wiki/Erd%C5%91s%E2%80%93R%C3%A9nyi_model#Properties_of_G(n,_p)">connectedness threshold</a> value of ln(N) / N. Since this is a sharp threshold, it's interesting to observe the connectedness of a graph with sufficiently large N at the threshold plus or minus a small epsilon.
+</p>
+
+<p style="font-size:20px; width:50%; text-align:center; margin-left:25%">
+Visualize an algorithm by checking the box to the left of the algorithm's name and clicking on a start node in the graph. For A*, click on a start node first and a target node second.
+</p>
+
+
+<p style="font-size:20px; width:50%; text-align:center; margin-left:25%">
+Use the animation speed slider to control the rate at which search // traversal algorithms propagate through the graph. Check Hide vertex labels and // or hide edge weights for a cleaner view.
+</p>
+
+<h1 style="color:gray; text-align: center">
+  // remarks
+</h1>
+<p style="color:gray; font-size:20px; width:50%; text-align:center; margin-left:25%">
+// the heuristic for A* is distance to target (l2 norm), which changes as the graph moves. this is not a great heuristic but i thought the dynamic graph looked cooler
+</p>
+
+<p style="color:gray; font-size:20px; width:50%; text-align:center; margin-left:25%">
+// the weight of an edge sets its strength (how strongly it binds adjacent nodes) not the length, which further degrades the heuristic because the weight isn't directly reflected in the distance between nodes
+</p>
+
 
 <script src = "data/data.js"></script>
 <script src = "app.js"></script>
