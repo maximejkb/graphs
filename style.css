@@ -1,10 +1,5 @@
-.algorithmForm {
-  float: right;
-  position: fixed;
-}
-input {
-  display: inline;
-}
 form {
-  font-family: "Times New Roman";
+  background-color:lightgray;
+  padding:10px;
+  border:2px solid gray;
 }
